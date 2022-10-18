@@ -1,0 +1,12 @@
+'use strict'
+const express = require('express');
+// const v1Router = require('./v1/routes');
+const v1WorkoutRoyter = require('./v1/routes/workoutRoutes');
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+app.use(express.json());
+app.use('/api/v1/workouts', v1WorkoutRoyter);
+
+app.listen(PORT, () => { console.log(`🚀 Server listening on port ${PORT}`)});
