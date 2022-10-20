@@ -3,19 +3,49 @@
 const workoutService = require('../services/workoutService');
 
 const getAllWorkouts = (req, res) => {
-    const allWorkouts = workoutService.getAllWorkouts();
-    res.status(200).send({status: 'Ok', total: allWorkouts.length, results: allWorkouts});
+    try {
+        const allWorkouts = workoutService.getAllWorkouts();
+        res.status(200).send({status: 'Ok', total: allWorkouts.length, results: allWorkouts});
+    } catch(err) {
+        res
+        .status(err?.status || 500)
+        .send({ status: "FAILED", data: { err: err?.message || err } });
+        return;
+    }
 };
 
 const getWorkoutById = (req, res) => {
-    const workout =  workoutService.workoutById(req.params.workoutId);
-    res.status(200).send({status:'Ok', total: 1, results:workout})
+    const { params: {workoutId}} = req;
+    if(!workoutId){
+        res
+        .status(err?.status || 500)
+        .send({ status: "FAILED", data: { err: err?.message || err } });
+        return;
+    }
+    try {
+        const workout =  workoutService.getWorkoutById(workoutId);
+        res.status(200).send({status:'Ok', total: 1, results:workout})
+    } catch(err) {
+        res
+        .status(err?.status || 500)
+        .send({ status: "FAILED", data: { err: err?.message || err } });
+    }
+    
 };
 
 const createWorkout = (req, res) => {
-    const {body} = req;
+    const { body } = req;
     // Aquí metemos las validaciones (joi, express-validate)
-    if(!body.name) {
+    if( !body.name ) {
+        res
+        .status(400)
+        .send({
+            status: "FAILED",
+            data: {
+            error: `One of the following keys is missing or is empty in request body: 
+                    'name', 'mode', 'equipment', 'exercises', 'trainerTips'`,
+            },
+        });
         return;
     }
     const newWorkout = {
@@ -25,18 +55,49 @@ const createWorkout = (req, res) => {
         exercises: body.exercises,
         trainerTips: body.trainerTips
     };
-    const createdWorkout = workoutService.createWorkout(newWorkout);
-    res.status(201).send({status: 'Ok', data: createdWorkout});
+    try {
+        const createdWorkout = workoutService.createWorkout(newWorkout);
+        res.status(201).send({status: 'Ok', data: createdWorkout});
+    } catch(err) {
+        res
+        .status(err?.status || 500)
+        .send({ status: "FAILED", data: { err: err?.message || err } });
+    }
 };
 
 const updateWorkout = (req, res) => {
-    const updatedWorkout = workoutService.updateWorkout(req.params.workoutId);
-    res.send(`Update workout ${req.params.workoutId}`);
+    const { 
+        body, 
+        params: { workoutId }
+    } = req;
+
+    if(!workoutId) {
+        res
+        .status(err?.status || 500)
+        .send({ status: "FAILED", data: { err: err?.message || err } });
+        return;
+    }
+    const updatedWorkout = workoutService.updateWorkout(workoutId, body);
+    res.status(200).send({status: 'Ok', data: updatedWorkout});
 }
 
 const deleteWorkout = (req, res) => {
-    workoutService.deleteWorkout(req.params.workoutId);
-    res.send(`Delete workout ${req.params.workoutId}`);
+    const { params: {workoutId}} = req;
+    if(!workoutId){
+        res
+        .status(err?.status || 500)
+        .send({ status: "FAILED", data: { err: err?.message || err } });
+        return;
+    }
+    try {
+        workoutService.deleteWorkout(workoutId);
+        res.status(204).send({status: 'Ok'});
+    } catch(err) {
+        res
+        .status(err?.status || 500)
+        .send({ status: "FAILED", data: { err: err?.message || err } });
+    }
+    
 }
 
 module.exports = {
