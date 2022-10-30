@@ -3,8 +3,13 @@ const Workout = require('../database/Workout');
 const { v4: uuid } = require('uuid');
 
 const getAllWorkouts = () => {
-    const allWorkouts = Workout.getAllWorkouts();
-    return allWorkouts;
+    try {
+        const allWorkouts = Workout.getAllWorkouts();
+        return allWorkouts;
+    } catch(err){
+        throw err;
+    }
+    
 };
 const getWorkoutById = (workoutId) => {
     try {

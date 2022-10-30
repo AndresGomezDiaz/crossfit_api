@@ -12,6 +12,8 @@ router
 
     .get("/:workoutId/records", recordController.getRecordForWorkout)
 
+    .get("/:workoutId/records/members/:memberId", recordController.getRecordsByMember)
+
     .post('/', workoutController.createWorkout)
 
     .put('/:workoutId', workoutController.updateWorkout)

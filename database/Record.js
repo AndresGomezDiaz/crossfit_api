@@ -15,4 +15,23 @@ const getRecordForWorkout = (workoutId) => {
     }
 };
 
-module.exports = { getRecordForWorkout };
+const getRecordsForWorkoutMember = (workoutId, memberId) => {
+    try {
+        const recordsWO = DB.records.filter((record) => record.workout === workoutId);
+        if (!recordsWO) {
+            throw { status: 400, message: `No existe el workoutId: '${workoutId}'` };
+        }
+        const recordsMember = recordsWO.filter((record) => record.member === memberId);
+        if(!recordsMember) {
+            throw { status: 400, message: `El deportista: ${workoutId} no ha hecho rutinas del workoutId: ${workoutId}` };
+        }
+        return recordsMember;
+    } catch (err) {
+        throw { status: err?.status || 500, message: err?.message || err };
+    }
+};
+
+module.exports = { 
+    getRecordForWorkout,
+    getRecordsForWorkoutMember
+};
