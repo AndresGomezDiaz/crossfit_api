@@ -4,7 +4,12 @@ const workoutService = require('../services/workoutService');
 
 const getAllWorkouts = (req, res) => {
     try {
-        const allWorkouts = workoutService.getAllWorkouts();
+        /**
+         * Podemos implementar el uso de query para realizar busquedas
+         * o paginación
+         */
+        const { mode, regs, page} = req.query;
+        const allWorkouts = workoutService.getAllWorkouts({ mode, regs, page});
         res.status(200).send({status: 'Ok', total: allWorkouts.length, results: allWorkouts});
     } catch(err) {
         res

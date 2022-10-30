@@ -3,9 +3,25 @@
 const DB = require('./db.json');
 const { saveToDatabase } = require('./utils');
 
-const getAllWorkouts = () => {
+const getAllWorkouts = (filterParams) => {
     try {
-        return DB.workouts;
+        let workouts = DB.workouts;
+        if(filterParams.mode) {
+            workouts = workouts.filter((workout) => 
+                workout.mode.toLowerCase().includes(filterParams.mode.toLowerCase())
+            );
+        }
+
+        if(filterParams.regs && filterParams.page) {
+            let total = workouts.length;
+            let numPaginas = Math.trunc(total / Number(filterParams.regs));
+            if(total % Number(filterParams.page)) numPaginas++;
+            let inicio = 1;
+            if(Number(filterParams.page) > 1) inicio = (Number(filterParams.regs) * (Number(filterParams.page) - 1)) + 1;
+            let final = inicio + Number(filterParams.regs);
+            workouts = workouts.slice(Number(inicio - 1), Number(final - 1));
+        }
+        return workouts;
     } catch(err) {
         throw { status: 500, message: err?.message || err };
     }
