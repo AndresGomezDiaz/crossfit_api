@@ -2,10 +2,10 @@
 
 const memberService = require('../services/memberService');
 
-const getAllMembers = (req, res) => {
+const getAllMembers = async (req, res) => {
     try {
-        const members = memberService.getAllMembers();
-        res.status(200).send({status: 'Ok', total: members.length, data: members});
+        const members = await memberService.getAllMembers();
+        res.status(200).send({status: 'Ok', total: members.rowCount, data: members.rows});
     } catch(err) {
         res
         .status(err?.status || 500)
@@ -14,7 +14,7 @@ const getAllMembers = (req, res) => {
     }
 };
 
-const getMemberById = (req, res) => {
+const getMemberById = async (req, res) => {
     const { params: {memberId}} = req;
     if(!memberId){
         res
@@ -23,8 +23,8 @@ const getMemberById = (req, res) => {
         return;
     }
     try {
-        const member = memberService.getMemberById(memberId);
-        res.status(200).send({status: 'Ok', data: member});
+        const member = await memberService.getMemberById(memberId);
+        res.status(200).send({status: 'Ok', data: member.rows});
     } catch(err) {
         res
         .status(err?.status || 500)

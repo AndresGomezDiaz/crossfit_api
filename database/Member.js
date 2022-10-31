@@ -1,26 +1,19 @@
 'use strict';
 
 const DB = require('./db.json');
+const dbClient = require('./db');
 
 const getMembers = () => {
-    try {
-        const members = DB.members;
-        return members;
-    } catch (err) {
-        throw { status: 500, message: err?.message || err };
-    }
+    let sql = `SELECT id_member, name, date_birth, email
+                FROM member;`
+    return dbClient.client.query(sql);
 };
 
 const getMemberById = (memberId) => {
-    try {
-        const member = DB.members.filter((member) => member.id === memberId);
-        if (!member) {
-            throw { status: 400, message: `No existe el memberId: '${memberId}'` };
-        }
-        return member;
-    } catch (err) {
-        throw { status: 500, message: err?.message || err };
-    }
+    let sql = `SELECT id_member, name, date_birth, email
+                FROM member
+                WHERE id_member = $1;`
+    return dbClient.client.query(sql, [memberId]);
 };
 
 module.exports = {
